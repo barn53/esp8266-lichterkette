@@ -1,0 +1,142 @@
+html,
+body {
+    height: 100%;
+}
+
+@keyframes k1 {
+    0%,
+    100% {
+        background-color: #123;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k2 {
+    0%,
+    100% {
+        background-color: #444;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k3 {
+    0%,
+    100% {
+        background-color: #532;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k4 {
+    0%,
+    100% {
+        background-color: #888;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k5 {
+    0%,
+    100% {
+        background-color: #987;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k6 {
+    0%,
+    100% {
+        background-color: #abc;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k7 {
+    0%,
+    100% {
+        background-color: #f01;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+@keyframes k8 {
+    0%,
+    100% {
+        background-color: #94a;
+    }
+
+    50% {
+        background-color: white;
+    }
+}
+
+.cell1 {
+    background-color: #123
+}
+
+.cell2 {
+    background-color: #444
+}
+
+.cell3 {
+    background-color: #532
+}
+
+.cell4 {
+    background-color: #888
+}
+
+.cell5 {
+    background-color: #987
+}
+
+.cell6 {
+    background-color: #abc
+}
+
+.cell7 {
+    background-color: #f01
+}
+
+.cell8 {
+    background-color: #94a
+}
+
+.anim1 {
+    animation: k1 0.5s ease 1 normal;
+}
+.anim2 {
+    animation: k2 0.5s ease 1 normal;
+}
+.anim3 {
+    animation: k3 0.5s ease 1 normal;
+}
+.anim4 {
+    animation: k4 0.5s ease 1 normal;
+}
+.anim5 {
+    animation: k5 0.5s ease 1 normal;
+}
+.anim6 {
+    animation: k6 0.5s ease 1 normal;
+}
+.anim7 {
+    animation: k7 0.5s ease 1 normal;
+}
+.anim8 {
+    animation: k8 0.5s ease 1 normal;
+}

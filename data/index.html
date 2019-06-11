@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Lichterkette</title>
+</head>
+
+<body>
+
+    <div class="container h-100 ">
+        <div class="row h-25 ">
+            <div class="col-6 action cell1" id="cell1"></div>
+            <div class="col-6 action cell2" id="cell2"></div>
+        </div>
+        <div class="row h-25 ">
+            <div class="col-6 action cell3" id="cell3"></div>
+            <div class="col-6 action cell4" id="cell4"></div>
+        </div>
+        <div class="row h-25 ">
+            <div class="col-6 action cell5" id="cell5"></div>
+            <div class="col-6 action cell6" id="cell6"></div>
+        </div>
+        <div class="row h-25 ">
+            <div class="col-6 action cell7" id="cell7"></div>
+            <div class="col-6 action cell8" id="cell8"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        function action(id) {
+            $.get("action_" + id, function (data) {
+
+            });
+        }
+
+        $(document).ready(function () {
+            $('.action').off().click(function (e) {
+                index = e.target.id.substr(-1)
+                $('#' + e.target.id).addClass('anim' + index)
+                action(index)
+            })
+
+            $(this).on('animationend', function (e) {
+                for (i = 1; i <= 8; i++) {
+                    $('#cell' + i).removeClass('anim' + i)
+                }
+            });
+        })
+
+    </script>
+</body>
+
+</html>
