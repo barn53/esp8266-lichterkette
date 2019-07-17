@@ -13,7 +13,7 @@ String getContentType(const String& filename); // convert the file extension to 
 bool handleAction(const String& path);
 bool handleFileRead(String path); // send the right file to the client (if it exists)
 
-Chain chain(20);
+Chain chain(15);
 
 void setupWiFi()
 {
@@ -22,7 +22,8 @@ void setupWiFi()
 
     Serial.print("Connecting ");
     while (WiFi.status() != WL_CONNECTED) {
-        delay(100);
+        chain.loop();
+        yield();
         Serial.print(".");
     }
 
@@ -49,11 +50,13 @@ void setup()
 {
     Serial.begin(115200);
     Serial.printf("Go! \n");
+
+    chain.begin();
+
     setupWiFi();
 
     SPIFFS.begin(); // Start the SPI Flash Files System
-
-    chain.begin();
+    chain.color();
 }
 
 void loop()
