@@ -11,34 +11,50 @@
     <title>Lichterkette</title>
 </head>
 
-<body>
+<body class="noScroll">
 
-    <div class="container h-100 ">
-        <div class="row h-25 ">
-            <div class="col-4 action cell1" id="cell1"></div>
-            <div class="col-4 action cell2" id="cell2"></div>
-            <div class="col-4 action cell3" id="cell3"></div>
+    <div class="container h-100">
+        <div class="row">
+            <table class="table table-light" style="height: 100vh;">
+                <tbody>
+                    <tr style="height:16.3vh">
+                        <td class="action align-middle text-center odd" id="cell1" style="width:33.3vw;">😍</td>
+                        <!-- rot -->
+                        <td class="action align-middle text-center even" id="cell2" style="width:33.3vw;">🤢</td>
+                        <!-- grün -->
+                        <td class="action align-middle text-center odd" id="cell3" style="width:33.3vw;">🥶</td>
+                        <!-- blau -->
+                    </tr>
+                    <tr style="height:16.3vh">
+                        <td class="action align-middle text-center even" id="cell4">🤪</td> <!-- pink -->
+                        <td class="action align-middle text-center odd" id="cell5">🤖</td> <!-- türkis -->
+                        <td class="action align-middle text-center even" id="cell6">😄</td> <!-- gelb -->
+                    </tr>
+                    <tr style="height:16.3vh">
+                        <td class="action align-middle text-center odd" id="cell7">😡</td> <!-- orange -->
+                        <td class="action align-middle text-center even" id="cell8">😈</td> <!-- lila -->
+                        <td class="action align-middle text-center odd" id="cell9">🤷‍</td> <!-- zufall -->
+                    </tr>
+                    <tr style="height:16.3vh">
+                        <td class="action align-middle text-center even" id="cell10">🌈</td> <!-- regenbogen -->
+                        <td class="action align-middle text-center odd" id="cell11"> 🎉</td> <!-- blinky, blinky -->
+                        <td class="action align-middle text-center even" id="cell12">🌩</td> <!-- strobo -->
+                    </tr>
+                    <tr style="height:16.3vh">
+                        <td class="action align-middle text-center odd" id="cell13">🦄</td> <!-- Verlauf/abwechselnd -->
+                        <td class="action align-middle text-center even" id="cell14">🐇</td> <!-- schneller -->
+                        <td class="action align-middle text-center odd" id="cell15">🐌</td> <!-- langsamer -->
+                    </tr>
+                    <tr style="height:16.3vh">
+                        <td class="action align-middle text-center even" id="cell16">💡</td> <!-- heller -->
+                        <td class="action align-middle text-center odd" id="cell17">🕯</td> <!-- dunkler -->
+                        <td class="action align-middle text-center even" id="cell18"><i class="fas fa-power-off"
+                                style="color:#e33"></i></td> <!-- aus -->
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="row h-25 ">
-            <div class="col-4 action cell4" id="cell4"></div>
-            <div class="col-4 action cell5" id="cell5"></div>
-            <div class="col-4 action cell6" id="cell6"></div>
-        </div>
-        <div class="row h-25 ">
-            <div class="col-4 action cell7" id="cell7"></div>
-            <div class="col-4 action cell8" id="cell8"></div>
-            <div class="col-4 action cell9" id="cell9"></div>
-        </div>
-        <div class="row h-25 ">
-            <div class="col-4 action cell10" id="cell10"></div>
-            <div class="col-4 action cell11" id="cell11"></div>
-            <div class="col-4 action cell12" id="cell12"></div>
-        </div>
-        <div class="row h-25 ">
-            <div class="col-4 action cell13" id="cell13"></div>
-            <div class="col-4 action cell14" id="cell14"></div>
-            <div class="col-4 action cell15" id="cell15"></div>
-        </div>
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -47,21 +63,22 @@
     <script type="text/javascript">
         function action(id) {
             $.get("action_" + id, function (data) {
-
+            }).fail(function (e) {
+                setTimeout(function () {
+                    $('#cell' + id).addClass('anim animError')
+                }, 200)
             });
         }
 
         $(document).ready(function () {
             $('.action').off().click(function (e) {
-                index = e.target.id.substr(4)
-                $('#' + e.target.id).addClass('anim' + index)
+                index = parseInt(e.target.id.substr(4))
+                $('#' + e.target.id).addClass('anim anim' + (((index + 1) % 2) + 1))
                 action(index)
             })
 
             $(this).on('animationend', function (e) {
-                for (i = 1; i <= 15; i++) {
-                    $('#cell' + i).removeClass('anim' + i)
-                }
+                $('.anim').removeClass('anim anim1 anim2 animError')
             });
         })
 

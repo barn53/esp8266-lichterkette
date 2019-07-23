@@ -1,8 +1,8 @@
 #include "color_corrector.h"
 
 ColorCorrector::ColorCorrector()
+    : m_darkenBy(128)
 {
-    m_darkenBy = 0;
 }
 
 template RgbColor ColorCorrector::get<RgbColor>(const RgbColor& c);
@@ -16,20 +16,23 @@ RgbColor ColorCorrector::get(const C& c)
     return m_colorGamma.Correct(rgb);
 }
 
-void ColorCorrector::brighter()
+bool ColorCorrector::brighter()
 {
+    auto was(m_darkenBy);
     m_darkenBy -= brightnessStep;
-    ;
     if (m_darkenBy < 0) {
         m_darkenBy = 0;
     }
     Serial.printf("darken by: %u\n", m_darkenBy);
+    return was != m_darkenBy;
 }
-void ColorCorrector::darker()
+bool ColorCorrector::darker()
 {
+    auto was(m_darkenBy);
     m_darkenBy += brightnessStep;
     if (m_darkenBy > 255) {
         m_darkenBy = 255;
     }
     Serial.printf("darken by: %u\n", m_darkenBy);
+    return was != m_darkenBy;
 }

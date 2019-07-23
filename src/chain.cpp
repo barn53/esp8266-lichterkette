@@ -1,10 +1,12 @@
 #include "chain.h"
+#include "state.h"
 
 Chain::Chain(uint16_t pixelCount)
     : m_pixel_count(pixelCount)
     , m_animations_count(pixelCount)
     , m_strip(pixelCount)
     , m_animations(m_animations_count)
+    , randomSeeded(false)
 {
 }
 
@@ -15,6 +17,13 @@ void Chain::begin()
     m_strip.Show();
 }
 
+void Chain::first()
+{
+    color(RgbColor(0x0, 0x0, 0xff));
+    color(RgbColor(0x0, 0xff, 0xff));
+    state2World();
+}
+
 void Chain::loop()
 {
     m_animations.UpdateAnimations();
@@ -23,46 +32,49 @@ void Chain::loop()
 
 void Chain::action(uint8_t id)
 {
-    stopAnimations();
+    if (!randomSeeded) {
+        randomSeeded = true;
+        randomSeed(millis());
+    }
 
     if (id == 1) {
         color(RgbColor(0xff, 0x0, 0x0));
     } else if (id == 2) {
-        color(RgbColor(0x0, 0xff, 0xff));
+        color(RgbColor(0x0, 0xff, 0x0));
     } else if (id == 3) {
         color(RgbColor(0x0, 0x0, 0xff));
     } else if (id == 4) {
-        color(RgbColor(0xff, 0x0, 0xff));
+        color(RgbColor(0xff, 0x0, 0xaa));
     } else if (id == 5) {
-        color(RgbColor(0xff, 0x0, 0xff));
+        color(RgbColor(0x0, 0xff, 0xdd));
     } else if (id == 6) {
-        color(RgbColor(0xff, 0x0, 0xff));
+        color(RgbColor(0xff, 0xff, 0x0));
     } else if (id == 7) {
-        rainbow();
+        color(RgbColor(0xff, 0xcc, 0x0));
     } else if (id == 8) {
-        // randomColor();
+        color(RgbColor(0xaa, 0xcc, 0xff));
     } else if (id == 9) {
-        // gradientAlternating();
+        color(RgbColor(random(0x100), random(0x100), random(0x100)));
     } else if (id == 10) {
-        // rotateCurent();
+        m_state.setRainbowMode();
     } else if (id == 11) {
-        // randomAnimated();
+        // blinky, blinky
     } else if (id == 12) {
-        strobo();
+        // strobo
     } else if (id == 13) {
-        brighter();
+        m_state.toggleGradientAlternating();
     } else if (id == 14) {
-        darker();
+        m_state.faster();
     } else if (id == 15) {
-        off();
+        m_state.slower();
+    } else if (id == 16) {
+        m_state.brighter();
+    } else if (id == 17) {
+        m_state.darker();
+    } else if (id == 18) {
+        // aus
     }
-}
-
-void Chain::stopAnimations()
-{
-    for (uint16_t index = 0; index < m_animations_count; ++index) {
-        m_animations.StopAnimation(index);
-    }
+    state2World();
 }
 
 void Chain::rotateAnimation(const AnimationParam& param)
@@ -95,57 +107,54 @@ void Chain::stroboAnimation(const AnimationParam& param)
 
 void Chain::init()
 {
-    for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        if (index == 0) {
-            m_strip.SetPixelColor(index, m_colorCorrector.get(RgbColor(0xff, 0x0, 0x0)));
-        } else {
-            m_strip.SetPixelColor(index, RgbColor(0x0, 0x0, 0x0));
-        }
-    }
+    m_strip.ClearTo(RgbColor(0x0, 0x0, 0x0));
+    m_strip.SetPixelColor(0, m_state.correctColor(RgbColor(0xff, 0x0, 0x0)));
     m_animations.StartAnimation(0, 100, std::bind(&Chain::rotateAnimation, this, std::placeholders::_1));
-}
-
-void Chain::color()
-{
-    color(RgbColor(0x0, 0xff, 0x0));
 }
 
 void Chain::color(const RgbColor& c)
 {
-    for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        m_strip.SetPixelColor(index, m_colorCorrector.get(c));
-    }
-}
-void Chain::rainbow()
-{
-    for (uint16_t index = 1; index < m_pixel_count + 1; ++index) {
-        float hue(index / static_cast<float>(m_pixel_count));
-        HsbColor c(hue, 1, 1);
-        m_strip.SetPixelColor(index - 1, m_colorCorrector.get(c));
-    }
-}
-void Chain::strobo()
-{
-    m_animations.StartAnimation(0, 80, std::bind(&Chain::stroboAnimation, this, std::placeholders::_1));
+    m_state.setColor(c);
+    m_state.setColorMode();
+    state2World();
 }
 
-void Chain::brighter()
+void Chain::state2World()
 {
-    for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        m_strip.SetPixelColor(index, m_strip.GetPixelColor(index).Lighten(m_colorCorrector.brightnessStep));
-    }
-    m_colorCorrector.brighter();
-}
-void Chain::darker()
-{
-    for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        m_strip.SetPixelColor(index, m_strip.GetPixelColor(index).Darken(m_colorCorrector.brightnessStep));
-    }
-    m_colorCorrector.darker();
-}
-void Chain::off()
-{
-    for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        m_strip.ClearTo(RgbColor(0x0, 0x0, 0x0));
+    if (m_state.isDirty()) {
+        m_animations.StopAll();
+        switch (m_state.getMode()) {
+        case State::Mode::GRADIENT: {
+            for (uint16_t index = 0; index < m_pixel_count; ++index) {
+                float progress(index / static_cast<float>(m_pixel_count));
+                m_strip.SetPixelColor(index, m_state.correctColor(RgbColor::LinearBlend(m_state.getColor1(), m_state.getColor2(), progress)));
+            }
+            break;
+        }
+        case State::Mode::ALTERNATING: {
+            for (uint16_t index = 0; index < m_pixel_count; ++index) {
+                if (index % 2 == 0) {
+                    m_strip.SetPixelColor(index, m_state.getCorrectedColor1());
+                } else {
+                    m_strip.SetPixelColor(index, m_state.getCorrectedColor2());
+                }
+            }
+            break;
+        }
+        case State::Mode::RAINBOW: {
+            for (uint16_t index = 0; index < m_pixel_count; ++index) {
+                float hue(index / static_cast<float>(m_pixel_count));
+                HsbColor c(hue, 1, 1);
+                m_strip.SetPixelColor(index, m_state.correctColor(c));
+            }
+            break;
+        }
+        case State::Mode::STROBO:
+            m_animations.StartAnimation(0, 80, std::bind(&Chain::stroboAnimation, this, std::placeholders::_1));
+            break;
+        default:
+            break;
+        }
+        m_state.setClean();
     }
 }

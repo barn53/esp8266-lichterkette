@@ -52,11 +52,9 @@ void setup()
     Serial.printf("Go! \n");
 
     chain.begin();
-
     setupWiFi();
-
     SPIFFS.begin(); // Start the SPI Flash Files System
-    chain.color();
+    chain.first();
 }
 
 void loop()

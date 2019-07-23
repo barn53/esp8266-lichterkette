@@ -8,8 +8,8 @@ public:
     template <typename C>
     RgbColor get(const C& c);
 
-    void brighter();
-    void darker();
+    bool brighter();
+    bool darker();
 
     static const uint8_t brightnessStep = 20;
 

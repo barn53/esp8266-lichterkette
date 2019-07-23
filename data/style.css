@@ -1,120 +1,54 @@
 html,
 body {
     height: 100%;
+    overflow: hidden;
+    font-family: Noteworthy-Bold,sans-serif;
+    font-size:10vmax;
+}
+
+table td {
+    padding: 0px !important;
 }
 
 @keyframes k1 {
     0%,
     100% {
-        background-color: #f00;
+        background-color: #eee;
     }
 
     50% {
-        background-color: white;
+        background-color: #0aa;
     }
 }
 @keyframes k2 {
     0%,
     100% {
-        background-color: #0f0;
+        background-color: white;
     }
 
     50% {
-        background-color: white;
+        background-color: #0aa;
     }
 }
 @keyframes k3 {
     0%,
     100% {
-        background-color: #00f;
+        background-color: transparent;
     }
 
     50% {
-        background-color: white;
-    }
-}
-@keyframes k4 {
-    0%,
-    100% {
-        background-color: #888;
-    }
-
-    50% {
-        background-color: white;
-    }
-}
-@keyframes k5 {
-    0%,
-    100% {
-        background-color: #987;
-    }
-
-    50% {
-        background-color: white;
-    }
-}
-@keyframes k6 {
-    0%,
-    100% {
-        background-color: #abc;
-    }
-
-    50% {
-        background-color: white;
-    }
-}
-@keyframes k7 {
-    0%,
-    100% {
-        background-image: linear-gradient(to right, #f00,#ff0,#0f0,#0ff,#00f,#f0f);
-    }
-
-    50% {
-        background-image: linear-gradient(white, white);
-    }
-}
-@keyframes k8 {
-    0%,
-    100% {
-        background-color: #94a;
-    }
-
-    50% {
-        background-color: white;
+        background-color: #f36;
     }
 }
 
-.cell1 {
-    background-color: #f00;
+.even {
+    background-color: white;
 }
 
-.cell2 {
-    background-color: #0f0;
+.odd {
+    background-color: #eee;
 }
 
-.cell3 {
-    background-color: #00f;
-}
-
-.cell4 {
-    background-color: #888
-}
-
-.cell5 {
-    background-color: #987
-}
-
-.cell6 {
-    background-color: #abc
-}
-
-.cell7 {
-    background-image: linear-gradient(to right, #f00,#ff0,#0f0,#0ff,#00f,#f0f);
-}
-
-.cell8 {
-    background-color: #94a
-}
 
 .anim1 {
     animation: k1 0.5s ease 1 normal;
@@ -122,21 +56,6 @@ body {
 .anim2 {
     animation: k2 0.5s ease 1 normal;
 }
-.anim3 {
+.animError {
     animation: k3 0.5s ease 1 normal;
-}
-.anim4 {
-    animation: k4 0.5s ease 1 normal;
-}
-.anim5 {
-    animation: k5 0.5s ease 1 normal;
-}
-.anim6 {
-    animation: k6 0.5s ease 1 normal;
-}
-.anim7 {
-    animation: k7 0.5s ease 1 normal;
-}
-.anim8 {
-    animation: k8 0.5s ease 1 normal;
 }
