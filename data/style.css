@@ -7,33 +7,34 @@ body {
 }
 
 table td {
+    border: 0px !important;
     padding: 0px !important;
 }
 
 @keyframes k1 {
     0%,
     100% {
-        background-color: #eee;
+        background-color: #222;
     }
 
     50% {
-        background-color: #0aa;
+        background-color: #5bf;
     }
 }
 @keyframes k2 {
     0%,
     100% {
-        background-color: white;
+        background-color: #222;
     }
 
     50% {
-        background-color: #0aa;
+        background-color: #0f4;
     }
 }
 @keyframes k3 {
     0%,
     100% {
-        background-color: transparent;
+        background-color: #222;
     }
 
     50% {
@@ -42,18 +43,18 @@ table td {
 }
 
 .even {
-    background-color: white;
+    background-color: #000;
 }
 
 .odd {
-    background-color: #eee;
+    background-color: #333;
 }
 
 
-.anim1 {
+.animSend {
     animation: k1 0.5s ease 1 normal;
 }
-.anim2 {
+.animOK {
     animation: k2 0.5s ease 1 normal;
 }
 .animError {

@@ -63,6 +63,7 @@
     <script type="text/javascript">
         function action(id) {
             $.get("action_" + id, function (data) {
+                $('#cell' + id).addClass('anim animOK')
             }).fail(function (e) {
                 setTimeout(function () {
                     $('#cell' + id).addClass('anim animError')
@@ -73,12 +74,12 @@
         $(document).ready(function () {
             $('.action').off().click(function (e) {
                 index = parseInt(e.target.id.substr(4))
-                $('#' + e.target.id).addClass('anim anim' + (((index + 1) % 2) + 1))
+                $('#' + e.target.id).addClass('anim animSend')
                 action(index)
             })
 
             $(this).on('animationend', function (e) {
-                $('.anim').removeClass('anim anim1 anim2 animError')
+                $('.anim').removeClass('anim animSend animOK animError')
             });
         })
 
