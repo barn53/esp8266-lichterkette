@@ -36,6 +36,9 @@ public:
     RgbColor getColor1() const { return m_color_1; }
     RgbColor getColor2() const { return m_color_2; }
     int8_t getSpeed() const { return m_speed; }
+    int8_t getStroboSpeed() const { return m_stroboSpeed; }
+
+    void log() const;
 
     template <typename C>
     RgbColor correctColor(const C& c)
@@ -44,11 +47,13 @@ public:
     }
 
 private:
+    static const char* modeToString(Mode m);
+
     ColorCorrector m_colorCorrector;
     RgbColor m_color_1; // uncorrected colors
     RgbColor m_color_2; // uncorrected colors
-    int8_t m_colorSwitch;
     int8_t m_speed;
+    int8_t m_stroboSpeed;
     Mode m_mode;
     bool m_dirty;
 };

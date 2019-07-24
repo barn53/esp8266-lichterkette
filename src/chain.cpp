@@ -20,7 +20,7 @@ void Chain::begin()
 void Chain::first()
 {
     color(RgbColor(0x0, 0x0, 0xff));
-    color(RgbColor(0x0, 0xff, 0xff));
+    color(RgbColor(0x0, 0xff, 0x0));
     state2World();
 }
 
@@ -52,15 +52,15 @@ void Chain::action(uint8_t id)
     } else if (id == 7) {
         color(RgbColor(0xff, 0xcc, 0x0));
     } else if (id == 8) {
-        color(RgbColor(0xaa, 0xcc, 0xff));
+        color(RgbColor(0xff, 0x0, 0xff));
     } else if (id == 9) {
         color(RgbColor(random(0x100), random(0x100), random(0x100)));
     } else if (id == 10) {
         m_state.setRainbowMode();
     } else if (id == 11) {
-        // blinky, blinky
+        m_state.setBlinkyBlinkyMode();
     } else if (id == 12) {
-        // strobo
+        m_state.setStroboMode();
     } else if (id == 13) {
         m_state.toggleGradientAlternating();
     } else if (id == 14) {
@@ -114,13 +114,14 @@ void Chain::init()
 
 void Chain::color(const RgbColor& c)
 {
-    m_state.setColor(c);
     m_state.setColorMode();
+    m_state.setColor(c);
     state2World();
 }
 
 void Chain::state2World()
 {
+    m_state.log();
     if (m_state.isDirty()) {
         m_animations.StopAll();
         switch (m_state.getMode()) {
