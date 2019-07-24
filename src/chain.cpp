@@ -54,7 +54,7 @@ void Chain::action(uint8_t id)
     } else if (id == 8) {
         color(RgbColor(0xff, 0x0, 0xff));
     } else if (id == 9) {
-        color(RgbColor(random(0x100), random(0x100), random(0x100)));
+        color(getRandomColor());
     } else if (id == 10) {
         m_state.setRainbowMode();
     } else if (id == 11) {
@@ -77,6 +77,11 @@ void Chain::action(uint8_t id)
     state2World();
 }
 
+RgbColor Chain::getRandomColor() const
+{
+    return RgbColor(random(0x100), random(0x100), random(0x100));
+}
+
 void Chain::rotateAnimation(const AnimationParam& param)
 {
     if (param.state == AnimationState_Completed) {
@@ -90,7 +95,7 @@ void Chain::stroboAnimation(const AnimationParam& param)
     RgbColor color1(0xff, 0xff, 0xff);
     RgbColor color2(0x0, 0x0, 0x0);
 
-    if (param.progress <= 0.1) {
+    if (param.progress <= 0.3) {
         for (uint16_t index = 0; index < m_pixel_count; ++index) {
             m_strip.SetPixelColor(index, color1);
         }
@@ -101,6 +106,28 @@ void Chain::stroboAnimation(const AnimationParam& param)
     }
 
     if (param.state == AnimationState_Completed) {
+        m_animations.RestartAnimation(param.index);
+    }
+}
+
+void Chain::blinkyBlinkyAnimation(const AnimationParam& param)
+{
+    RgbColor c;
+    if (m_blinkyBlinkyCounters[param.index] % 2 == 0) {
+        c = RgbColor::LinearBlend(m_blinkyBlinkyColors_1[param.index], m_blinkyBlinkyColors_2[param.index], param.progress);
+    } else {
+        c = RgbColor::LinearBlend(m_blinkyBlinkyColors_2[param.index], m_blinkyBlinkyColors_1[param.index], param.progress);
+    }
+
+    m_strip.SetPixelColor(param.index, m_state.correctColor(c));
+
+    if (param.state == AnimationState_Completed) {
+        if (m_blinkyBlinkyCounters[param.index] % 2 == 0) {
+            m_blinkyBlinkyColors_1[param.index] = getRandomColor();
+        } else {
+            m_blinkyBlinkyColors_2[param.index] = getRandomColor();
+        }
+        ++m_blinkyBlinkyCounters[param.index];
         m_animations.RestartAnimation(param.index);
     }
 }
@@ -142,20 +169,66 @@ void Chain::state2World()
             }
             break;
         }
-        case State::Mode::RAINBOW: {
-            for (uint16_t index = 0; index < m_pixel_count; ++index) {
-                float hue(index / static_cast<float>(m_pixel_count));
-                HsbColor c(hue, 1, 1);
-                m_strip.SetPixelColor(index, m_state.correctColor(c));
-            }
+        case State::Mode::RAINBOW:
+            rainbow2World();
             break;
-        }
+        case State::Mode::BLINKY_BLINKY:
+            blinkyBlinky2World();
+            break;
         case State::Mode::STROBO:
-            m_animations.StartAnimation(0, 80, std::bind(&Chain::stroboAnimation, this, std::placeholders::_1));
+            strobo2World();
             break;
         default:
             break;
         }
+
+        if (m_state.getMode() == State::Mode::GRADIENT
+            || m_state.getMode() == State::Mode::ALTERNATING
+            || m_state.getMode() == State::Mode::RAINBOW) {
+
+            // speed
+        }
+
         m_state.setClean();
+    }
+}
+
+void Chain::rainbow2World()
+{
+    for (uint16_t index = 0; index < m_pixel_count; ++index) {
+        float hue((index / static_cast<float>(m_pixel_count)) / 1.2);
+        HsbColor c(hue, 1, 1);
+        m_strip.SetPixelColor(index, m_state.correctColor(c));
+    }
+}
+void Chain::strobo2World()
+{
+    uint16_t duration(220);
+    switch (m_state.getStroboSpeed()) {
+    case 1:
+        duration = 180;
+        break;
+    case 2:
+        duration = 140;
+        break;
+    case 3:
+        duration = 100;
+        break;
+    case 4:
+        duration = 60;
+        break;
+    }
+    m_animations.StartAnimation(0, duration, std::bind(&Chain::stroboAnimation, this, std::placeholders::_1));
+}
+void Chain::blinkyBlinky2World()
+{
+    m_blinkyBlinkyColors_1.clear();
+    m_blinkyBlinkyColors_2.clear();
+    m_blinkyBlinkyCounters.clear();
+    for (uint16_t index = 0; index < m_pixel_count; ++index) {
+        m_blinkyBlinkyColors_1.push_back(getRandomColor());
+        m_blinkyBlinkyColors_2.push_back(getRandomColor());
+        m_blinkyBlinkyCounters.push_back(0);
+        m_animations.StartAnimation(index, random(2000) + 300, std::bind(&Chain::blinkyBlinkyAnimation, this, std::placeholders::_1));
     }
 }

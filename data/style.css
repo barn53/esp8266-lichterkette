@@ -1,9 +1,9 @@
 html,
 body {
     height: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
     font-family: Noteworthy-Bold,sans-serif;
-    font-size:12vmin;
+    font-size:11vmin;
 }
 
 table td {
@@ -41,6 +41,16 @@ table td {
         background-color: #f36;
     }
 }
+@keyframes k4 {
+    0%,
+    100% {
+        background-color: #222;
+    }
+
+    50% {
+        background-color: #f3f;
+    }
+}
 
 .even {
     background-color: #000;
@@ -59,4 +69,7 @@ table td {
 }
 .animError {
     animation: k3 0.5s ease 1 normal;
+}
+.animTimeout {
+    animation: k4 0.5s ease 1 normal;
 }

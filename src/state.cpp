@@ -2,6 +2,7 @@
 
 State::State()
     : m_speed(0)
+    , m_darkenBy(128)
     , m_stroboSpeed(0)
     , m_mode(Mode::GRADIENT)
     , m_dirty(false)
@@ -84,7 +85,7 @@ void State::faster()
             m_dirty = true;
         }
     } else if (m_mode == Mode::STROBO) {
-        if (m_stroboSpeed < 5) {
+        if (m_stroboSpeed < 4) {
             ++m_stroboSpeed;
             m_dirty = true;
         }
@@ -93,11 +94,21 @@ void State::faster()
 
 void State::brighter()
 {
-    m_dirty = m_colorCorrector.brighter() || m_dirty;
+    auto was(m_darkenBy);
+    m_darkenBy -= 30;
+    if (m_darkenBy < 0) {
+        m_darkenBy = 0;
+    }
+    m_dirty = (was != m_darkenBy);
 }
 void State::darker()
 {
-    m_dirty = m_colorCorrector.darker() || m_dirty;
+    auto was(m_darkenBy);
+    m_darkenBy += 30;
+    if (m_darkenBy > 255) {
+        m_darkenBy = 255;
+    }
+    m_dirty = (was != m_darkenBy);
 }
 
 const char* State::modeToString(Mode m)
@@ -129,7 +140,7 @@ void State::log() const
     Serial.printf("Mode: %s\n", modeToString(m_mode));
     Serial.printf("Color 1: R: %u G: %u B: %u\n", m_color_1.R, m_color_1.G, m_color_1.B);
     Serial.printf("Color 2: R: %u G: %u B: %u\n", m_color_2.R, m_color_2.G, m_color_2.B);
-    Serial.printf("Darken by: %u\n", m_colorCorrector.getDarkenBy());
+    Serial.printf("Darken by: %u\n", m_darkenBy);
     Serial.printf("Speed: %u - Strobo Speed: %u\n", m_speed, m_stroboSpeed);
 }
 

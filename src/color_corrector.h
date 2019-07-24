@@ -6,15 +6,8 @@ public:
     ColorCorrector();
 
     template <typename C>
-    RgbColor get(const C& c);
-
-    bool brighter();
-    bool darker();
-    int16_t getDarkenBy() const { return m_darkenBy; }
-
-    static const uint8_t brightnessStep = 20;
+    RgbColor get(const C& c, int16_t darkenBy);
 
 private:
     NeoGamma<NeoGammaTableMethod> m_colorGamma;
-    int16_t m_darkenBy;
 };

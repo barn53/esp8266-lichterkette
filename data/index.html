@@ -15,9 +15,9 @@
 
     <div class="container h-100">
         <div class="row">
-            <table class="table table-light" style="height: 84vh;">
+            <table class="table table-light" style="height: 100vh;">
                 <tbody>
-                    <tr style="height:14vh">
+                    <tr style="height:16.6vh">
                         <td class="action align-middle text-center odd" id="cell1" style="width:33.3vw;">😍</td>
                         <!-- rot -->
                         <td class="action align-middle text-center even" id="cell2" style="width:33.3vw;">🤢</td>
@@ -25,27 +25,27 @@
                         <td class="action align-middle text-center odd" id="cell3" style="width:33.3vw;">🥶</td>
                         <!-- blau -->
                     </tr>
-                    <tr style="height:14vh">
+                    <tr style="height:16.6vh">
                         <td class="action align-middle text-center even" id="cell4">🤪</td> <!-- pink -->
                         <td class="action align-middle text-center odd" id="cell5">🤖</td> <!-- türkis -->
                         <td class="action align-middle text-center even" id="cell6">😄</td> <!-- gelb -->
                     </tr>
-                    <tr style="height:14vh">
+                    <tr style="height:16.6vh">
                         <td class="action align-middle text-center odd" id="cell7">😡</td> <!-- orange -->
                         <td class="action align-middle text-center even" id="cell8">😈</td> <!-- lila -->
                         <td class="action align-middle text-center odd" id="cell9">🤷‍</td> <!-- zufall -->
                     </tr>
-                    <tr style="height:14vh">
+                    <tr style="height:16.6vh">
                         <td class="action align-middle text-center even" id="cell10">🌈</td> <!-- regenbogen -->
                         <td class="action align-middle text-center odd" id="cell11"> 🎉</td> <!-- blinky, blinky -->
                         <td class="action align-middle text-center even" id="cell12">🌩</td> <!-- strobo -->
                     </tr>
-                    <tr style="height:14vh">
+                    <tr style="height:16.6vh">
                         <td class="action align-middle text-center odd" id="cell13">🦄</td> <!-- Verlauf/abwechselnd -->
                         <td class="action align-middle text-center even" id="cell14">🐇</td> <!-- schneller -->
                         <td class="action align-middle text-center odd" id="cell15">🐌</td> <!-- langsamer -->
                     </tr>
-                    <tr style="height:14vh">
+                    <tr style="height:16.6vh">
                         <td class="action align-middle text-center even" id="cell16">💡</td> <!-- heller -->
                         <td class="action align-middle text-center odd" id="cell17">🕯</td> <!-- dunkler -->
                         <td class="action align-middle text-center even" id="cell18"><i class="fas fa-power-off"
@@ -62,12 +62,15 @@
 
     <script type="text/javascript">
         function action(id) {
-            $.get("action_" + id, function (data) {
+            var get = $.get("action_" + id, function (data) {
                 $('#cell' + id).addClass('anim animOK')
             }).fail(function (e) {
                 $('#cell' + id).addClass('anim animError')
-                b
             });
+            setTimeout(function () {
+                get.abort();
+                // $('#cell' + id).addClass('anim animTimeout')
+            }, 2000);
         }
 
         $(document).ready(function () {
@@ -78,7 +81,7 @@
             })
 
             $(this).on('animationend', function (e) {
-                $('.anim').removeClass('anim animSend animOK animError')
+                $('.anim').removeClass('anim animSend animOK animError animTimeout')
             });
         })
 

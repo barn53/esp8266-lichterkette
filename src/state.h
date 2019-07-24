@@ -43,7 +43,7 @@ public:
     template <typename C>
     RgbColor correctColor(const C& c)
     {
-        return m_colorCorrector.get(c);
+        return m_colorCorrector.get(c, m_darkenBy);
     }
 
 private:
@@ -54,6 +54,7 @@ private:
     RgbColor m_color_2; // uncorrected colors
     int8_t m_speed;
     int8_t m_stroboSpeed;
+    int16_t m_darkenBy;
     Mode m_mode;
     bool m_dirty;
 };
