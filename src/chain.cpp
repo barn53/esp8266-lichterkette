@@ -30,6 +30,11 @@ void Chain::loop()
     m_strip.Show();
 }
 
+void Chain::off()
+{
+    action(18);
+}
+
 void Chain::action(uint8_t id)
 {
     if (!randomSeeded) {
@@ -72,7 +77,7 @@ void Chain::action(uint8_t id)
     } else if (id == 17) {
         m_state.darker();
     } else if (id == 18) {
-        // aus
+        m_state.setOffMode();
     }
     state2World();
 }
@@ -113,23 +118,40 @@ void Chain::stroboAnimation(const AnimationParam& param)
 void Chain::blinkyBlinkyAnimation(const AnimationParam& param)
 {
     RgbColor c;
-    if (m_blinkyBlinkyCounters[param.index] % 2 == 0) {
-        c = RgbColor::LinearBlend(m_blinkyBlinkyColors_1[param.index], m_blinkyBlinkyColors_2[param.index], param.progress);
+    if (m_counters[param.index] % 2 == 0) {
+        c = RgbColor::LinearBlend(m_colors_1[param.index], m_colors_2[param.index], param.progress);
     } else {
-        c = RgbColor::LinearBlend(m_blinkyBlinkyColors_2[param.index], m_blinkyBlinkyColors_1[param.index], param.progress);
+        c = RgbColor::LinearBlend(m_colors_2[param.index], m_colors_1[param.index], param.progress);
     }
 
     m_strip.SetPixelColor(param.index, m_state.correctColor(c));
 
     if (param.state == AnimationState_Completed) {
-        if (m_blinkyBlinkyCounters[param.index] % 2 == 0) {
-            m_blinkyBlinkyColors_1[param.index] = getRandomColor();
+        if (m_counters[param.index] % 2 == 0) {
+            m_colors_1[param.index] = getRandomColor();
         } else {
-            m_blinkyBlinkyColors_2[param.index] = getRandomColor();
+            m_colors_2[param.index] = getRandomColor();
         }
-        ++m_blinkyBlinkyCounters[param.index];
+        ++m_counters[param.index];
         m_animations.RestartAnimation(param.index);
     }
+}
+
+void Chain::rotationAnimation(const AnimationParam& param)
+{
+    for (uint16_t index = 0; index < m_pixel_count; ++index) {
+        m_strip.SetPixelColor(index, RgbColor::LinearBlend(m_colors_1[index], m_colors_2[index], param.progress));
+    }
+
+    if (param.state == AnimationState_Completed) {
+        initColorsForRotation();
+        m_animations.RestartAnimation(param.index);
+    }
+}
+
+void Chain::offAnimation(const AnimationParam& param)
+{
+    m_strip.SetPixelColor(param.index, RgbColor::LinearBlend(m_colors_1[param.index], RgbColor(0x0, 0x0, 0x0), param.progress));
 }
 
 void Chain::init()
@@ -157,6 +179,7 @@ void Chain::state2World()
                 float progress(index / static_cast<float>(m_pixel_count));
                 m_strip.SetPixelColor(index, m_state.correctColor(RgbColor::LinearBlend(m_state.getColor1(), m_state.getColor2(), progress)));
             }
+            rotation2World();
             break;
         }
         case State::Mode::ALTERNATING: {
@@ -167,10 +190,12 @@ void Chain::state2World()
                     m_strip.SetPixelColor(index, m_state.getCorrectedColor2());
                 }
             }
+            rotation2World();
             break;
         }
         case State::Mode::RAINBOW:
             rainbow2World();
+            rotation2World();
             break;
         case State::Mode::BLINKY_BLINKY:
             blinkyBlinky2World();
@@ -178,15 +203,11 @@ void Chain::state2World()
         case State::Mode::STROBO:
             strobo2World();
             break;
+        case State::Mode::OFF:
+            off2World();
+            break;
         default:
             break;
-        }
-
-        if (m_state.getMode() == State::Mode::GRADIENT
-            || m_state.getMode() == State::Mode::ALTERNATING
-            || m_state.getMode() == State::Mode::RAINBOW) {
-
-            // speed
         }
 
         m_state.setClean();
@@ -196,7 +217,7 @@ void Chain::state2World()
 void Chain::rainbow2World()
 {
     for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        float hue((index / static_cast<float>(m_pixel_count)) / 1.2);
+        float hue((index / static_cast<float>(m_pixel_count)) / 1.1);
         HsbColor c(hue, 1, 1);
         m_strip.SetPixelColor(index, m_state.correctColor(c));
     }
@@ -220,15 +241,67 @@ void Chain::strobo2World()
     }
     m_animations.StartAnimation(0, duration, std::bind(&Chain::stroboAnimation, this, std::placeholders::_1));
 }
+
+void Chain::clearColors()
+{
+    m_colors_1.clear();
+    m_colors_2.clear();
+    m_counters.clear();
+}
+
 void Chain::blinkyBlinky2World()
 {
-    m_blinkyBlinkyColors_1.clear();
-    m_blinkyBlinkyColors_2.clear();
-    m_blinkyBlinkyCounters.clear();
+    clearColors();
     for (uint16_t index = 0; index < m_pixel_count; ++index) {
-        m_blinkyBlinkyColors_1.push_back(getRandomColor());
-        m_blinkyBlinkyColors_2.push_back(getRandomColor());
-        m_blinkyBlinkyCounters.push_back(0);
+        m_colors_1.push_back(getRandomColor());
+        m_colors_2.push_back(getRandomColor());
+        m_counters.push_back(0);
         m_animations.StartAnimation(index, random(2000) + 300, std::bind(&Chain::blinkyBlinkyAnimation, this, std::placeholders::_1));
+    }
+}
+
+void Chain::initColorsForRotation()
+{
+    clearColors();
+    for (uint16_t index = 0; index < m_pixel_count; ++index) {
+        m_colors_1.push_back(m_strip.GetPixelColor(index));
+        if (index == 0) {
+            m_colors_2.push_back(m_strip.GetPixelColor(m_pixel_count - 1));
+        } else {
+            m_colors_2.push_back(m_strip.GetPixelColor(index - 1));
+        }
+    }
+}
+
+void Chain::rotation2World()
+{
+    initColorsForRotation();
+    uint16_t duration(2000);
+    switch (m_state.getSpeed()) {
+    case 1:
+        duration = 1500;
+        break;
+    case 2:
+        duration = 1000;
+        break;
+    case 3:
+        duration = 500;
+        break;
+    case 4:
+        duration = 250;
+        break;
+    case 5:
+        duration = 100;
+        break;
+    }
+    m_animations.StartAnimation(0, duration, std::bind(&Chain::rotationAnimation, this, std::placeholders::_1));
+}
+
+void Chain::off2World()
+{
+    clearColors();
+    for (uint16_t index = 0; index < m_pixel_count; ++index) {
+        m_colors_1.push_back(m_strip.GetPixelColor(index));
+        m_animations.StartAnimation(index, random(8000) + 2000, std::bind(&Chain::offAnimation, this, std::placeholders::_1));
     }
 }

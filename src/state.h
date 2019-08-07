@@ -10,7 +10,8 @@ public:
         ALTERNATING,
         RAINBOW,
         STROBO,
-        BLINKY_BLINKY
+        BLINKY_BLINKY,
+        OFF
     };
 
     State();
@@ -21,6 +22,7 @@ public:
     void setRainbowMode();
     void setStroboMode();
     void setBlinkyBlinkyMode();
+    void setOffMode();
 
     void brighter();
     void darker();

@@ -2,8 +2,8 @@
 
 State::State()
     : m_speed(0)
-    , m_darkenBy(128)
     , m_stroboSpeed(0)
+    , m_darkenBy(128)
     , m_mode(Mode::GRADIENT)
     , m_dirty(false)
 {
@@ -56,6 +56,14 @@ void State::setBlinkyBlinkyMode()
     if (m_mode != Mode::BLINKY_BLINKY) {
         m_dirty = true;
         m_mode = Mode::BLINKY_BLINKY;
+    }
+}
+
+void State::setOffMode()
+{
+    if (m_mode != Mode::OFF) {
+        m_dirty = true;
+        m_mode = Mode::OFF;
     }
 }
 
@@ -128,6 +136,8 @@ const char* State::modeToString(Mode m)
         break;
     case Mode::BLINKY_BLINKY:
         return "Mode::BLINKY_BLINKY";
+    case Mode::OFF:
+        return "Mode::OFF";
         break;
     }
     return "";
