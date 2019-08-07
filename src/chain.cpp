@@ -223,6 +223,9 @@ void Chain::strobo2World()
 {
     uint16_t duration(220);
     switch (m_state.getStroboSpeed()) {
+    case 0:
+        duration = 220;
+        break;
     case 1:
         duration = 180;
         break;
