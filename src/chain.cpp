@@ -97,16 +97,13 @@ void Chain::rotateAnimation(const AnimationParam& param)
 
 void Chain::stroboAnimation(const AnimationParam& param)
 {
-    RgbColor color1(0xff, 0xff, 0xff);
-    RgbColor color2(0x0, 0x0, 0x0);
-
     if (param.progress <= 0.3) {
         for (uint16_t index = 0; index < m_pixel_count; ++index) {
-            m_strip.SetPixelColor(index, color1);
+            m_strip.SetPixelColor(index, m_state.correctColor(RgbColor(0xff, 0xff, 0xff)));
         }
     } else {
         for (uint16_t index = 0; index < m_pixel_count; ++index) {
-            m_strip.SetPixelColor(index, color2);
+            m_strip.SetPixelColor(index, RgbColor(0x0, 0x0, 0x0));
         }
     }
 
@@ -278,20 +275,22 @@ void Chain::rotation2World()
     initColorsForRotation();
     uint16_t duration(2000);
     switch (m_state.getSpeed()) {
+    case 0:
+        return;
     case 1:
-        duration = 1500;
+        duration = 2000;
         break;
     case 2:
-        duration = 1000;
+        duration = 1500;
         break;
     case 3:
-        duration = 500;
+        duration = 1000;
         break;
     case 4:
-        duration = 250;
+        duration = 500;
         break;
     case 5:
-        duration = 100;
+        duration = 250;
         break;
     }
     m_animations.StartAnimation(0, duration, std::bind(&Chain::rotationAnimation, this, std::placeholders::_1));
