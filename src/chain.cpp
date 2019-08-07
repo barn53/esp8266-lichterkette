@@ -275,7 +275,6 @@ void Chain::initColorsForRotation()
 
 void Chain::rotation2World()
 {
-    initColorsForRotation();
     uint16_t duration(2000);
     switch (m_state.getSpeed()) {
     case 0:
@@ -296,6 +295,7 @@ void Chain::rotation2World()
         duration = 250;
         break;
     }
+    initColorsForRotation();
     m_animations.StartAnimation(0, duration, std::bind(&Chain::rotationAnimation, this, std::placeholders::_1));
 }
 
