@@ -108,14 +108,14 @@ void setup()
     chain.first();
 }
 
-uint32_t lastTime(millis());
+uint32_t lastTime(0);
 void loop()
 {
     server.handleClient();
     OTA.loop();
     chain.loop();
 
-    if (millis() - lastTime > 60000) {
+    if (millis() - lastTime > 30000) {
         lastTime = millis();
         tm* t(getLocalTime());
         Serial.printf("%u.%u.%u %02u:%02u:%02u\n",
