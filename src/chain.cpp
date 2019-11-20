@@ -275,24 +275,24 @@ void Chain::initColorsForRotation()
 
 void Chain::rotation2World()
 {
-    uint16_t duration(2000);
+    uint16_t duration(2500);
     switch (m_state.getSpeed()) {
     case 0:
         return;
     case 1:
-        duration = 2000;
+        duration = 2500;
         break;
     case 2:
-        duration = 1500;
+        duration = 1350;
         break;
     case 3:
-        duration = 1000;
+        duration = 450;
         break;
     case 4:
-        duration = 500;
+        duration = 150;
         break;
     case 5:
-        duration = 250;
+        duration = 50;
         break;
     }
     initColorsForRotation();

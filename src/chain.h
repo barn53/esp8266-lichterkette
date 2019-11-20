@@ -5,8 +5,8 @@
 #include <NeoPixelBus.h>
 #include <vector>
 
-using Feature = NeoGrbFeature;
-//using Feature = NeoRgbFeature;
+//using Feature = NeoGrbFeature;
+using Feature = NeoRgbFeature;
 
 class State;
 
